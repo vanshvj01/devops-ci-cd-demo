@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-result
+  labels:
+    app: student-result
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: student-result
+  template:
+    metadata:
+      labels:
+        app: student-result
+    spec:
+      containers:
+        - name: student-result
+          image: devops-ci-cd-demo:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 2
+            periodSeconds: 5
