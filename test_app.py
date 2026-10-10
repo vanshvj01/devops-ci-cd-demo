@@ -23,4 +23,8 @@ def test_grade_out_of_range():
 
 def test_result():
     r = result("Arjun", [40, 50, 60])
-    assert r == {"name": "Arjun", "average": 50, "grade": "C", "passed": True}
+    assert r == {"name": "Arjun", "average": 50, "grade": "C", "passed": True, "distinction": False}
+
+
+def test_distinction():
+    assert result("Vedant", [80, 90, 85])["distinction"] is True
