@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    options {
+        skipDefaultCheckout(true)     // checkout is done in our own Checkout stage
+    }
     triggers {
         pollSCM('* * * * *')          // check GitHub every minute; a new commit starts the pipeline
     }
@@ -10,7 +13,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/vanshvj01/devops-ci-cd-demo.git'
+                checkout scm              // same repository and branch as the job (GitHub, main)
+                sh 'git log -1 --oneline'
             }
         }
         stage('Install & Test') {
@@ -23,7 +27,10 @@ pipeline {
                     pytest -v --junitxml=test-results.xml
                 '''
             }
-            post { always { junit 'test-results.xml' } }
+            post {
+                always  { junit 'test-results.xml' }
+                success { archiveArtifacts artifacts: 'app.py, Dockerfile, k8s/*.yaml, test-results.xml', fingerprint: true }
+            }
         }
         stage('Build Docker Image') {
             steps {
@@ -37,7 +44,8 @@ pipeline {
                     kubectl apply -f k8s/
                     kubectl set image deployment/student-result student-result=$IMAGE:$TAG
                     kubectl rollout status deployment/student-result --timeout=120s
-                    kubectl get pods,svc -l app=student-result -o wide
+                    kubectl get deployment,pods -l app=student-result -o wide
+                    kubectl get service student-result-svc
                 '''
             }
         }
