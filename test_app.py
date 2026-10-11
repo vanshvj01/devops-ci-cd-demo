@@ -1,5 +1,5 @@
 import pytest
-from app import average, grade, result
+from app import average, grade, remark, result
 
 
 def test_average():
@@ -23,8 +23,14 @@ def test_grade_out_of_range():
 
 def test_result():
     r = result("Arjun", [40, 50, 60])
-    assert r == {"name": "Arjun", "average": 50, "grade": "C", "passed": True, "distinction": False}
+    assert r == {"name": "Arjun", "average": 50, "grade": "C", "passed": True, "distinction": False,
+                 "remark": "Pass"}
 
 
 def test_distinction():
     assert result("Vedant", [80, 90, 85])["distinction"] is True
+
+
+def test_remark():
+    assert remark("O") == "Outstanding"
+    assert remark("F") == "Needs improvement"

@@ -3,7 +3,7 @@ import json
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.2.0"
 
 
 def average(marks):
@@ -26,10 +26,17 @@ def grade(avg):
     return "F"
 
 
+REMARKS = {"O": "Outstanding", "A": "Excellent", "B": "Good", "C": "Pass", "F": "Needs improvement"}
+
+
+def remark(g):
+    return REMARKS[g]
+
+
 def result(name, marks):
     avg = average(marks)
     return {"name": name, "average": avg, "grade": grade(avg), "passed": avg >= 40,
-            "distinction": avg >= 75}
+            "distinction": avg >= 75, "remark": remark(grade(avg))}
 
 
 class Handler(BaseHTTPRequestHandler):
